@@ -1,0 +1,1175 @@
+\documentclass[serif]{beamer}
+\usetheme{Boadilla}
+\usepackage{graphicx}
+\usepackage[final]{animate}
+\usepackage{breqn}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{shapes,arrows,positioning,shadows}
+\usepackage{subfig}
+\usepackage{pgf}
+
+% change format of enumerated lists
+\setbeamertemplate{enumerate items}[default]
+
+\setbeamertemplate{navigation symbols}{}
+
+%tikz objects
+\tikzstyle{decision} = [diamond, draw, text width=6em, text badly centered, inner sep=2pt, top color=white, bottom color=zissou3]
+\tikzstyle{block} = [rectangle, draw, text width=10em, text centered, rounded corners, minimum height=3em, minimum width=8em, top color = white, bottom color=zissou3]
+\tikzstyle{declare} = [rectangle, draw, text width=10em, text centered, minimum height=3em, minimum width=8em, top color = white, bottom color=zissou3]
+
+% knitr setup
+<<setup, include = F, cache = F>>=
+# set global chunk options
+opts_chunk$set(fig.path='fig/', fig.align='center', fig.show='hold',message=F,echo=F,results='asis',dev='pdf',dev.args=list(family='serif'),fig.pos='!ht',warning=F)
+options(replace.assign=T,width=90,digits=1)
+@
+
+% dependent data
+<<dep_dat, include = F, cache = F>>=
+# setwd('M:/presentations/cerf15_pres')
+library(plyr)
+library(dplyr)
+
+source('R/funcs.R')
+source('M:/r_code/EPC/epc_dat.r')
+setwd('M:/presentations/cerf15_pres')
+
+#reorder factors for relevant data frames
+seg.levs<-c('Hillsborough Bay','Old Tampa Bay','Middle Tampa Bay','Lower Tampa Bay')
+seg.names<-c('HB','OTB','MTB','LTB')
+tb.dat$seg<-factor(tb.dat$seg,levels=seg.levs,labels=seg.names)
+epc.est$seg<-factor(epc.est$seg,levels=seg.levs,labels=seg.names)
+epc.est.act$seg<-factor(epc.est.act$seg,levels=seg.levs,labels=seg.names)
+sal.grd$seg<-factor(sal.grd$seg,levels=seg.levs,labels=seg.names)
+sal.nrm$seg<-factor(sal.nrm$seg,levels=seg.levs,labels=seg.names)
+sg.dat$seg<-factor(sg.dat$seg,levels=seg.levs,labels=seg.names)
+tb.chl$seg<-factor(tb.chl$seg,levels=seg.levs,labels=seg.names)
+
+#mean obs values for chl by seg
+chl.mean.o<-lapply(split(tb.dat,tb.dat$seg),function(x) exp(mean(x$Chla_ugl)))
+#percent decrease in obs chl by seg before and after 1980
+chl.per.o<-lapply(
+  split(tb.dat,tb.dat$seg),
+  function(x){
+    mean.prior<-exp(mean(x$Chla_ugl[as.numeric(x$year)<1980]))
+    mean.after<-exp(mean(x$Chla_ugl[as.numeric(x$year)>=1980]))
+    100*(mean.prior-mean.after)/mean.prior
+    }
+  )
+#percent decrease bay-wide
+chl.per.o2<-{
+  mean.prior<-exp(mean(tb.dat$Chla_ugl[as.numeric(tb.dat$year)<1980]))
+  mean.after<-exp(mean(tb.dat$Chla_ugl[as.numeric(tb.dat$year)>=1980]))
+  100*(mean.prior-mean.after)/mean.prior
+  }
+#percent decrease in chl for H Bay 1983 - 1984
+hdrop<-function(yr.1,yr.2){
+  tmp<-tb.dat[tb.dat$seg=='HB',]
+  mean.prior<-exp(mean(tmp$Chla_ugl[as.numeric(tmp$year)==yr.1]))
+  mean.after<-exp(mean(tmp$Chla_ugl[as.numeric(tmp$year)==yr.2]))
+  100*(mean.prior-mean.after)/mean.prior
+  }
+#observed maximum for el nino
+chl.nino.o<-lapply(
+  split(tb.dat,tb.dat$seg),
+  function(x){
+    x<-x[as.numeric(x$year)>=1990 & as.numeric(x$year)<2000,]
+    ind<-which.max(x$Chla_ugl)
+    out<-x[ind,][,c('month.name','year','Chla_ugl')]
+    out$Chla_ugl<-exp(out$Chla_ugl)
+    out
+    }
+  )
+#obs chl for month, whole bay
+chl.mo.o<-ddply(
+  tb.dat,
+  .(month.name),
+  .fun=function(x) exp(mean(x$Chla_ugl))
+  )
+chl.mo.o<-chl.mo.o[chl.mo.o$month.name %in% c('February','September'),]
+#obs chl for month, by segment
+chl.mo.o2<-ddply(
+  tb.dat,
+  .(seg,month.name),
+  .fun=function(x) exp(mean(x$Chla_ugl))
+  )
+chl.mo.o2<-chl.mo.o2[chl.mo.o2$month.name %in% c('February','September'),]
+#correlation of chlorophyll with sal all data
+sal.cor<-cor.test(tb.dat$sal.ref,tb.dat$Chla_ugl)
+#correlation of chlorophyll w/ sal before/after WWT
+sal.cor2<-ddply(
+  tb.dat,
+  .(seg),
+  .fun=function(x){ 
+      tmp<-cor.test(~Chla_ugl+sal.ref,x)
+      with(tmp,c(estimate,p.value))
+    }
+  )
+#mod performance, 'null.dat' is data.frame used for performance table below
+#contains rmse and rsq
+null.dat<-ddply(
+  epc.est.act,
+  .(seg),
+  .fun=function(x){
+    
+    ols<-lm(
+      Chla_ugl~dec.time + sal.ref + sin(2*pi*dec.time) + cos(2*pi*dec.time),
+      data=x
+      ) 
+    
+    quant.hi<-rq(
+      Chla_ugl~dec.time + sal.ref + sin(2*pi*dec.time) + cos(2*pi*dec.time),
+      tau=0.9,
+      data=x
+      )
+    
+    quant.lo<-rq(
+      Chla_ugl~dec.time + sal.ref + sin(2*pi*dec.time) + cos(2*pi*dec.time),
+      tau=0.1,
+      data=x
+      )
+    
+    #rsq and rmse by seg and model type
+    data.frame(
+      nl.md=c(
+        rsq.fun(resid(ols),x$Chla_ugl),
+        sqrt(sum(resid(ols)^2)/(length(resid(ols))))
+        ),
+      wt.md=c(
+        rsq.fun(x$res.md,x$Chla_ugl),
+        sqrt(sum(x$res.md^2)/(length(x$res.md)))
+        ),
+      nl.hi=c(
+        rsq.rq.fun(resid(quant.hi),x$Chla_ugl,0.9),
+        sqrt(sum(resid(quant.hi)^2)/(length(resid(quant.hi))))
+        ),
+      wt.hi=c(
+        rsq.rq.fun(x$res.hi,x$Chla_ugl,0.9),
+        sqrt(sum(x$res.hi^2)/(length(x$res.hi)))
+        ),
+      nl.lo=c(
+        rsq.rq.fun(resid(quant.lo),x$Chla_ugl,0.1),
+        sqrt(sum(resid(quant.lo)^2)/(length(resid(quant.lo))))
+        ),
+      wt.lo=c(
+        rsq.rq.fun(x$res.lo,x$Chla_ugl,0.1),
+        sqrt(sum(x$res.lo^2)/(length(x$res.lo)))
+        )
+      )
+ 
+    }
+  )
+null.dat<-data.frame(stat=rep(c('rsq','rmse'),nrow(null.dat)/2),null.dat)
+#perf list, permutation of null.dat
+perf.ls<-list(
+  #perf for wtd mods
+  wtq90.rsq=null.dat[null.dat$stat=='rsq',c('seg','wt.hi')],
+  wtq10.rsq=null.dat[null.dat$stat=='rsq',c('seg','wt.lo')],
+  wtmd.rsq=null.dat[null.dat$stat=='rsq',c('seg','wt.md')],
+  wtq90.rmse=null.dat[null.dat$stat=='rmse',c('seg','wt.hi')],
+  wtq10.rmse=null.dat[null.dat$stat=='rmse',c('seg','wt.lo')],
+  wtmd.rmse=null.dat[null.dat$stat=='rmse',c('seg','wt.md')],
+  #perf for null mods
+  nlq90.rsq=null.dat[null.dat$stat=='rsq',c('seg','nl.hi')],
+  nlq10.rsq=null.dat[null.dat$stat=='rsq',c('seg','nl.lo')],
+  nlmd.rsq=null.dat[null.dat$stat=='rsq',c('seg','nl.md')],
+  nlq90.rmse=null.dat[null.dat$stat=='rmse',c('seg','nl.hi')],
+  nlq10.rmse=null.dat[null.dat$stat=='rmse',c('seg','nl.lo')],
+  nlmd.rmse=null.dat[null.dat$stat=='rmse',c('seg','nl.md')]
+  )
+nl.q.rsq<-as.matrix(null.dat[null.dat$stat=='rsq',c('nl.hi','nl.lo')])
+wt.q.rsq<-as.matrix(null.dat[null.dat$stat=='rsq',c('wt.hi','wt.lo')])
+nl.md.rsq<-as.matrix(null.dat[null.dat$stat=='rsq',c('nl.md')])
+wt.md.rsq<-as.matrix(null.dat[null.dat$stat=='rsq',c('wt.md')])
+#cv for salinity normalized predictions by model, segment, and year
+nrm.cv<-melt(sal.nrm,measure.vars=c('norm.md','norm.hi','norm.lo'))
+nrm.cv<-ddply(
+  nrm.cv,
+  .(seg,year,variable),
+  .fun=function(x) cv(x$value)
+  )
+nrm.cv<-lapply(split(nrm.cv,nrm.cv$seg),function(x) split(x,x$variable))
+#CV ranges by segment and model
+#lapply(nrm.cv,function(x) lapply(x,function(y) diff(range(y$V1))))
+#cv for salinity normalized predictions by model, segment and season
+nrm.cv.s<-sal.nrm
+nrm.cv.s$seas<-cut(as.numeric(as.character(sal.nrm$month.num)),
+  c(-Inf,0.2,0.45,0.7,+Inf),
+  labels=c('JFM','AMJ','JAS','OND')
+  )
+nrm.cv.s<-melt(nrm.cv.s,measure.vars=c('norm.md','norm.hi','norm.lo'))
+nrm.cv.s<-ddply(
+  nrm.cv.s,
+  .(seg,seas,variable),
+  .fun=function(x) cv(x$value)
+  )
+nrm.cv.s<-lapply(split(nrm.cv.s,nrm.cv.s$seg),function(x) split(x,x$variable))
+## regression of continuous enso index values for only sig relationship
+est.seas<-epc.est.act
+seas.ls<-list(
+  JFM=c('January','February','March'),
+  AMJ=c('April','May','June'),
+  JAS=c('July','August','September'),
+  OND=c('October','November','December')
+  )
+season<-rep(NA,nrow(est.seas))
+for(i in 1:length(seas.ls)) 
+  season[est.seas$month.name %in% seas.ls[[i]]]<-names(seas.ls)[i]
+est.seas$season<-season
+#split for scaling of hi and lo residuals by segment
+est.seas<-split(est.seas,est.seas$seg)
+est.seas<-lapply(
+  est.seas,
+  function(x){
+    x$res.hi<-scale(x$res.hi,center=T,scale=F)
+    x$res.lo<-scale(x$res.lo,center=T,scale=F)
+    x
+    }
+  )
+est.seas<-do.call('rbind',est.seas)
+est.seas<-melt(est.seas,measure.vars=c('res.md','res.hi','res.lo'))
+est.seas<-aggregate(value~seg+year+season+variable,est.seas,mean)
+enso.seas<-enso[,c('year','season','cat.seas','enso.seas')]
+enso.est.seas<-merge(est.seas,enso.seas,by=c('year','season'))
+enso.est.seas<-subset(enso.est.seas,subset=seg=='LTB' & variable=='res.lo' & season=='AMJ')
+enso.mod<-summary(lm(value~enso.seas,enso.est.seas)) #this is used
+rm(list=c('est.seas','enso.est.seas','season','seas.ls','enso.seas'))
+@
+
+% custom colors
+<<zissou, echo = F, results = 'asis', cache = F>>=
+library(wesanderson)
+pal <- wes.palette(name = 'Zissou', type = 'continuous')
+num.cols <- 5
+
+for(i in 1:num.cols){
+ 
+  col.nm <- paste0('zissou',i)
+  hexa <- paste0(gsub('#','',pal(num.cols)[i]))
+  cat(paste0('\\definecolor{', col.nm,'}{HTML}{',hexa,'}'))
+  
+}
+
+bg_col <- scales::alpha(pal(num.cols)[3], 0.3)
+
+pdf('fig/back_tmp.pdf',bg = bg_col)
+frame()
+invisible(dev.off())
+
+@
+
+% my custom ggplot theme
+<<my_ggplot, echo = F, results = 'hide' , message = F>>=
+theme_mine <- function (base_size = 12, base_family = "") {
+  theme_bw(base_size = base_size, base_family = base_family) %+replace% 
+  theme(
+    plot.background = element_rect(fill='transparent', 
+      colour = NA),
+    panel.background = element_rect(fill='transparent', 
+      colour = NA),
+    legend.background = element_rect(fill='transparent', 
+      colour = NA),
+    strip.background = element_rect(fill = 
+        alpha(pal(5)[5],0.5)),
+    legend.key = element_rect(fill = 'transparent', 
+      colour = NA)
+    )   
+}
+
+# set as default
+theme_set(theme_mine())
+@
+
+% figure used on title page
+<<title_fig, echo = F, results = 'hide', message = F, eval = F>>=
+load('data/salwt_grd.RData')
+load('data/epc_est.RData')
+
+to.plo <- sal.grd
+labs <- c('January', 'February', 'March', 'April', 'May', 'June', 'July', 
+  'August', 'September', 'October', 'November', 'December')
+to.plo$month.name <- factor(to.plo$month.num, labels = labs)
+
+#min, max sal.ref vals to plot....
+lim.vals<- ddply(
+  epc.est, 
+  .variable = c('seg', 'month.num'), 
+  .fun = function(x){
+    Low <- quantile(x$sal.ref, 0.05)
+    High <- quantile(x$sal.ref, 0.95)
+    data.frame(Low, High)
+    }
+  )
+lim.vals$month.name <- factor(lim.vals$month.num, labels = labs)
+
+# months to sub
+month.sub <- 'July'
+to.plo <- to.plo[to.plo$month.name == month.sub, ]
+lim.vals <- lim.vals[lim.vals$month.name == month.sub, ]
+
+# constrain plots to quants
+to.plo <- merge(to.plo, lim.vals, by = c('seg'), all.x = T)
+sel.vec <- with(to.plo, 
+  sal.grid >= Low &
+  sal.grid <= High
+  )
+to.plo <- to.plo[sel.vec, ]
+
+#y axis label for plots
+ylabs<-expression(paste('Chloropyhll-',italic(a),' (',italic('\u03bc'),'g ',L^-1,')'))
+
+p1 <- ggplot(to.plo, aes(x = sal.grid, y = bt.md, group = dec.time, 
+    colour = dec.time)) + 
+  geom_line(size = 1) + 
+  facet_wrap(~seg, scales = 'free', ncol = 4) + 
+  scale_y_continuous(ylabs) +
+  scale_x_continuous(name=expression(italic(Sal[ff]))) +
+  theme_mine() +
+  theme(legend.position = 'bottom') +
+  scale_colour_gradientn('Year', colours = pal(5))
+
+pdf('fig/title_plo.pdf', width = 12, height =3.5, family = 'serif')
+print(p1)
+dev.off()
+
+pdf('fig/title_plonoleg.pdf', width = 15, height =2.8, family = 'serif')
+print(p1 + theme(legend.position = 'none'))
+dev.off()
+
+@
+
+\setbeamercolor{title}{fg=zissou1} % main title
+\setbeamercolor{frametitle}{fg=zissou3, bg=zissou2} % frame titles
+\setbeamercolor{structure}{fg=zissou5} % bottom banner
+\setbeamercolor{normal text}{fg=zissou1}
+\usebackgroundtemplate{\includegraphics[height=\paperheight,width=\paperwidth]{fig/back_tmp.pdf}}
+
+\begin{document}
+
+\title[WRTDS in Tidal Waters]{\textbf{Adaptation of a Weighted Regression Approach to Evaluate Water Quality Trends in an Estuary}\vspace{-0.15in}}
+\author[M. Beck]{Marcus W. Beck\inst{1} \and James D. Hagy III\inst{2}}
+
+\institute[ORISE, EPA]{\inst{1} ORISE post-doc, USEPA National Health and Environmental Effects Research Laboratory, Gulf Ecology Division, \href{mailto:beck.marcus@epa.gov}{beck.marcus@epa.gov} \and \inst{2} USEPA National Health and Environmental Effects Research Laboratory, Gulf Ecology Division, \href{mailto:hagy.jim@epa.gov}{hagy.jim@epa.gov}}
+
+\date{Nov. 9, 2015}
+
+\titlegraphic{\includegraphics[width=0.9\linewidth]{fig/title_plonoleg.pdf}}
+
+%%%%%%
+\begin{frame}
+\titlepage
+\end{frame}
+
+%%%%%%
+\begin{frame}{\textbf{The eutrophication paradigm}}{\textbf{Research and management in coastal waters}}
+\begin{quote}
+Eutrophication (noun) - an \alert{increase} in the rate of supply of \alert{organic matter} to an ecosystem\\~\\
+\vspace{0.05in}
+\hfill -- \cite{Nixon95}
+\end{quote}
+\begin{center}
+\scalebox{1}{
+\begin{tikzpicture}[node distance = 4cm, auto, >=stealth]
+  \node[block] (a) {Nutrient Loading};
+	\node[decision] (b)  [right of=a] {Responses};
+ 	\draw[->] (a) -- (b);
+  \draw[decorate,decoration={brace,amplitude=10pt}] [right of=b] (2,-1.5) -- (2,1.5);
+  \node[draw,align=left,draw=none] [right of=b] {\textbf{Changes in:}\\ Chlorophyll\\ Primary Production\\ System Metabolism\\ Dissolved Oxygen};
+\end{tikzpicture}}
+\end{center}
+\vspace{-0.5cm}\hspace*{15pt}\scalebox{0.7}{\hbox{\tiny Adapted from \cite{Cloern01}}}\\~\\
+\end{frame}
+
+% ts example
+<<ts_ex, fig = F, results = 'hide', echo = F, eval = F>>=
+load('data/epc_tb_chl.RData')
+ylabs<-expression(paste('Chloropyhll-',italic(a),' (',italic('\u03bc'),'g ',L^-1,')'))
+
+toplo <- filter(tb.chl, seg == 'Old Tampa Bay') %>% 
+  group_by(date.f) %>% 
+  summarize(Chla_ugl = median(Chla_ugl, na.rm = T))
+
+p1 <- ggplot(toplo, aes(x = date.f, y = Chla_ugl)) + 
+  geom_line() +
+  scale_y_continuous(ylabs,limits=c(0,40)) +
+  theme_mine() +
+  scale_x_date(
+    name=element_blank()
+    )
+
+pdf('fig/ts_ex.pdf', height = 2, width = 12, family = 'serif')
+p1
+dev.off()
+@
+
+%%%%%%
+\begin{frame}{\textbf{The eutrophication paradigm}}{\textbf{Research and management in coastal waters}}
+Increasing availability of records describing \alert{long-term changes} \\~\\
+Observed data can provide a means to an end, potentially \alert{high power} with large sample size \\~\\
+Can we \alert{develop} and \alert{apply} tools that leverage the descriptive capabilities of these large datasets? \\~\\
+Can we \alert{link descriptions} to \alert{causal events} to inform management or understanding?
+\begin{figure}
+\centerline{\includegraphics[width = \textwidth]{fig/ts_ex.pdf}}
+\end{figure}
+\end{frame}
+
+% tampa bay map, w/ inset
+<<tb_map, fig = F, results = 'hide', echo = F, eval = F>>=
+#wes cols
+cols <- pal(5)
+land_col <- alpha(cols[3],0.8)
+wat_col <- alpha(cols[2],0.5)
+text_col <- cols[5]
+
+#tb segment shapefile
+tb.seg<-readShapeSpatial('data/tb_seg.shp')
+
+#station locations
+tb.crds<-readShapeSpatial('data/tb_sta.shp')
+
+#shapefile for state
+state<-readShapeSpatial('data/FL_state.shp')
+
+##
+pdf('fig/tb_map.pdf', width = 6.5, height = 6.5, family = 'serif')
+
+par(mar=c(0,0,0,0))
+plot(tb.seg,col=wat_col)
+plot(state,add=T,col=land_col)
+plot(tb.seg,add=T,col=alpha('white',0))
+text(tb.crds$Actual_Lon, tb.crds$Actual_Lat, labels=tb.crds$sta,cex=0.75)
+text(tb.seg,labels=tb.seg@data$seg,col = text_col, cex= 2.5)
+
+crds <- list(x1 = -82.47,x2 = -82.3, y1 = 27.53, y2 = 27.69)
+with(crds,rect(x1,y1,x2,y2, col = 'white'))
+bounds <- attributes(extent(tb.seg))
+subplot({
+  plot(state,col=land_col)
+with(bounds,rect(xmin,ymin,xmax,ymax, border = text_col, lwd = 4))
+  }
+,x = mean(unlist(crds[c('x1','x2')])), 
+  y = mean(unlist(crds[c('y1','y2')])), 
+  size = c(2,2))
+
+dev.off()
+@
+
+%%%%%%
+\begin{frame}{\textbf{Tampa Bay}}{\textbf{Understanding chlorophyll response to eutrophication}}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+\item Four bay segments\\~\\
+\item Monthly wq data at 50 stations from 1974 to present \\~\\
+\item Longitudinal profile of nutrient load and salinity \\~\\
+\end{itemize}
+\vspace{0cm}\hspace*{15pt}\scalebox{0.7}{\hbox{\tiny Data from \cite{TBEP11}}}
+\end{column}
+\begin{column}{0.5\textwidth}
+\centerline{\includegraphics[width = \textwidth]{fig/tb_map.pdf}}
+\end{column}
+\end{columns}
+\end{frame}
+
+%%%%%%
+\begin{frame}{\textbf{Tampa Bay}}{\textbf{Understanding chlorophyll response to eutrophication}}
+<<annual_chl, echo = F, cache = T, message = F, fig.width = 8, fig.height = 4.5, fig.cap = 'Annual trends in chlorophyll for each bay segment.', out.width = '\\linewidth'>>=
+load('data/epc_tb_chl.RData')
+ylabs<-expression(paste('Chloropyhll-',italic(a),' (',italic('\u03bc'),'g ',L^-1,')'))
+
+#get median values for chl by year and bay, merge with tb.chl on two columns
+rexp<-"^(\\w+)\\s?(.*)$"
+fill.dat<-melt(unlist(lapply(split(tb.chl,paste(tb.chl$year,tb.chl$seg)),
+  function(x) median(x$Chla_ugl))))
+fill.dat<-data.frame(
+  year=sub(rexp,"\\1",row.names(fill.dat)),
+  seg=sub(rexp,"\\2",row.names(fill.dat)),
+  Median=fill.dat[,1]
+)
+tb.chl.gg<-merge(tb.chl,fill.dat,by.x=c('year','seg'))
+pal <- wes.palette(name = 'Zissou', type = 'continuous')
+p1<-ggplot(tb.chl.gg,aes(x=year,y=Chla_ugl,fill=Median)) + 
+  geom_boxplot(outlier.size=1,outlier.colour=alpha('black', 0.7),size=0.25) + 
+  scale_y_continuous(ylabs,limits=c(0,50)) +
+  scale_fill_gradientn(colours = pal(100)) +
+  facet_wrap(~seg) + 
+  theme_mine() +
+  scale_x_discrete(
+    name=element_blank(),
+    breaks=function(x) seq(1975,2010,by=5)
+    ) + 
+  theme(legend.position = 'none')
+
+print(p1)
+@
+\end{frame}
+
+% variation in chl by year, season, and management
+<<salmoyr,include=F, cache = T>>=
+#changing trends by year, month, salinity
+
+load('data/epc_est.RData')
+
+ylabs<-expression(paste('Chloropyhll-',italic(a),' (',italic('\u03bc'),'g ',L^-1,')'))
+
+to.plo<-epc.est[epc.est$seg=='Hillsborough Bay',]
+to.plo$yr.cut<-cut(as.numeric(to.plo$year),c(-Inf,1979,+Inf),labels=c('before','after'))
+
+#to retain same sig digits for each plot
+fmt <- function(){
+    function(x) format(x,nsmall = 0,scientific = FALSE)
+}
+
+#chlorophyll a over time, combo of year and month plots
+p1<-ggplot(to.plo[to.plo$year %in% c('1975','1985','1995','2005'),],aes(x=month.name,y=exp(Chla_ugl),group=year,colour=year)) + 
+  geom_line(alpha=0.7,size=1) +
+  geom_point(size=3) +
+  theme_mine() +
+  theme(
+    legend.position='top',
+    axis.title.y=element_blank()
+    ) +
+  scale_x_discrete('Month',labels=strsplit('JFMAMJJASOND','')[[1]]) + 
+  scale_colour_manual('Year',values=pal(4))
+
+p2<-ggplot(to.plo,aes(x=Salinity_ppt,y=exp(Chla_ugl))) + 
+  geom_point(data=to.plo,aes(colour=yr.cut,shape=yr.cut),size=3,alpha=0.6) + 
+  theme_mine() +
+  theme(legend.position='top',
+    axis.title.y=element_blank()
+    ) +
+  scale_x_continuous('Salinity') + 
+  scale_y_continuous(labels = fmt()) + 
+  scale_colour_manual('Wastewater treatment',values=pal(2)) +
+  scale_shape_manual('Wastewater treatment',values=c(16,17))
+
+
+# grid.arrange(arrangeGrob(p1,p2,nrow=2,heights=c(9,10),left=textGrob(ylabs,rot=90)))
+
+pdf('fig/salmoyr.pdf',height=3.2,width=3.8,family='serif')
+print(p1)
+print(p2)
+dev.off()
+@
+%%%%%%
+\begin{frame}{\textbf{Tampa Bay}}{\textbf{Understanding chlorophyll response to eutrophication}}
+What affects our interpretation of chlorophyll response to nutrients?
+\vspace{-0.1in}
+\captionsetup[subfloat]{captionskip=0pt, position=top}
+\begin{figure}
+\centering
+\subfloat[]{
+\includegraphics[width=0.46\textwidth,page=1,trim=0.2in 0in 0in 0.35in,clip]{fig/salmoyr.pdf}
+\label{fig:salmoyr1}
+}
+\subfloat[]{
+\includegraphics[width=0.46\textwidth,page=2,trim=0.2in 0in 0in 0.35in,clip]{fig/salmoyr.pdf}
+\label{fig:salmoyr2}
+}
+
+\leavevmode\smash{\makebox[0pt]{\hspace{0em}% HORIZONTAL POSITION           
+  \rotatebox[origin=l]{90}{\hspace{3em}% VERTICAL POSITION
+    {\color{black} Chlorophyll-\textit{a}}}}}
+    \hspace{0pt plus 1filll}\null
+
+\caption{Variation in chlorophyll by {\color{zissou5}\protect\subref{fig:salmoyr1}} time and {\color{zissou5}\protect\subref{fig:salmoyr2}} salinity and management in Hillsborough Bay.  Panel {\color{zissou5}\protect\subref{fig:salmoyr1}} is colored before and after wastewater treatment in 1979.}
+\label{fig:salmoyr}
+\end{figure}
+\captionsetup[subfloat]{position=top}
+\end{frame}
+
+%%%%%%
+\begin{frame}{\textbf{Tampa Bay}}{\textbf{Understanding chlorophyll response to eutrophication}}
+\alert{Problem:} Response endpoints of eutrophication vary naturally over time and with discharge or tidal patterns\\~\\
+\alert{Solution:} Develop a model that accounts for changes in relationships between drivers of pollution over time.\\~\\
+The \alert{weighted regression (WRTDS)} model is being developed by USGS for pollutant modelling in rivers \cite{Hirsch10}\\~\\
+Models pollution concentration as a function of \alert{time}, \alert{discharge}, and \alert{season}\\~\\
+\alert{Adaptation:} Can this approach be used to evaluate chlorophyll trends in Tampa Bay?
+\end{frame}
+
+<<wtex, echo = F, results = 'hide', message = F, eval = F>>=
+load('data/epc_tb_dat.RData')
+load('data/epc_est_act.RData')
+
+dat.in <- data.frame(tb.dat, pred = epc.est.act$fit.md)
+dat.in <- dat.in[dat.in$year>=2000 & dat.in$year <=2010,]
+dat.in <- dat.in[dat.in$seg=='Hillsborough Bay',]
+
+row_exs <- 1:nrow(dat.in)
+
+pdf('fig/wtex.pdf', height = 3.75, width = 8, family = 'serif')
+for(row_ex in row_exs){
+  
+  cat(row_ex, '\t')
+  
+  ref.in<-dat.in[row_ex,]
+
+  ##
+  #random year, month, load, one year, wts separated
+  ref.wt<-wt.fun(ref.in,dat.in,all=T)
+  yr.sub<-format(dat.in$date.f,'%Y')==ref.in$year
+  titles<-with(
+    ref.in,
+    c(as.character(month.name),year,substitute(italic(Sal[ff])~sal,list(sal=as.character(round(ref.in$sal.ref,2)))),
+    'All'),
+  )
+  
+  p1.dat<-data.frame(Month=dat.in$date.f[yr.sub],Wt=ref.wt[yr.sub,1])
+  p1<-ggplot(p1.dat,aes(x=Month,y=Wt)) + 
+    geom_line() + 
+    ggtitle(titles[[1]]) +
+    scale_y_continuous(name=element_blank(),limits=c(0,1)) +
+    scale_x_date(labels=date_format("%b"),name=element_blank()) +
+    theme_mine()
+  
+  p2.dat<-data.frame(Date=dat.in$date.f,Wt=ref.wt[,2])
+  p2<-ggplot(p2.dat,aes(x=Date,y=Wt)) + 
+    geom_line() + 
+    scale_x_date(name=element_blank(),breaks = as.Date(range(dat.in$date.f)), labels = date_format("%Y-%m")) +
+    scale_y_continuous(name=element_blank(),limits=c(0,1)) +
+    ggtitle(titles[[2]]) +
+    theme_mine()
+  
+  #p3 xlims
+  p3x0 <- paste0(as.numeric(ref.in$year)-2,'-01-01')
+  p3x1 <- paste0(as.numeric(ref.in$year)+2,'-01-01')
+  p3.dat<-data.frame(Date=dat.in$date.f,Wt=ref.wt[,3],
+    sal.ref=dat.in$sal.ref)
+  yint<-which(dat.in$sal.ref==ref.in$sal.ref)
+  p3<-ggplot(p3.dat,aes(x=Date,y=Wt)) + 
+    geom_line() + 
+    #geom_line(aes(y=sal.ref),col='red') + 
+    geom_hline(yintercept=p3.dat[yint,'sal.ref'],col='black',lwd=1.4,lty=2) +
+    scale_y_continuous(name=element_blank(),limits=c(0,1)) +
+    scale_x_date(name=element_blank(),limits=as.Date(c(p3x0,p3x1)), breaks = as.Date(c(p3x0,p3x1)), labels = date_format("%Y-%m")) +
+    ggtitle(titles[[3]]) +
+    theme_mine()
+  
+  p4.dat<-data.frame(Date=dat.in$date.f,Wt=ref.wt[,1]*ref.wt[,2]*ref.wt[,3])
+  p4<-ggplot(p4.dat,aes(x=Date,y=Wt)) + 
+    geom_line() + 
+    scale_x_date(name=element_blank(),breaks = as.Date(range(dat.in$date.f)), labels = date_format("%Y-%m")) +
+    scale_y_continuous(name=element_blank(),limits=c(0,1)) +
+    ggtitle(titles[[4]]) + 
+    theme_mine()
+  
+  ##
+  #ggplot showing point size and color in relation to total weight
+  p.dat<-data.frame(
+    Date=dat.in$date.f,
+    Chla_ugl=dat.in$Chla_ugl,
+    pred = dat.in$pred,
+    sal.ref=dat.in$sal.ref,
+    month.wt=ref.wt[,1],
+    year.wt=ref.wt[,2],
+    sal.wt=ref.wt[,3],
+    all.wt=ref.wt[,1]*ref.wt[,2]*ref.wt[,3]
+  )
+  
+  title.val<-substitute(
+    mo~yr~italic(Sal[ff])~sal,
+    list(mo=as.character(ref.in$month.name),yr=paste0(ref.in$year,', '),sal=as.character(round(ref.in$sal.ref,2)))
+    )
+   
+  # predicted values to plot
+  preds <- p.dat[1:row_ex, ]
+  
+  ylabs<-expression(paste('Chlorophyll-',italic(a),' (',italic('\u03bc'),'g ',L^-1,')'))
+  p.dat.plo<-ggplot(p.dat,aes(x=Date,y=Chla_ugl)) +
+    geom_point(aes(size=all.wt,colour=all.wt)) +
+    scale_y_continuous(limit=c(0,4.5),name=ylabs) +
+    scale_x_date(name=element_blank()) +
+    scale_size(range=c(2,12)) +
+    geom_line(data = preds, aes(x = Date, y = pred), size = 1.3, alpha = 0.6) +
+    ggtitle(title.val) + 
+    theme_mine() +
+    scale_colour_gradientn(colours = pal(100)) +
+    theme(legend.position = 'none')
+  
+  grid.arrange(
+      p.dat.plo,
+      arrangeGrob(p1,p2,p3,p4,nrow=2,left=textGrob('Weights',rot=90)), ncol = 2
+    )
+}
+
+dev.off()
+@
+
+%%%%%%
+\begin{frame}{\textbf{Tampa Bay}}{\textbf{Understanding chlorophyll response to eutrophication}}
+How does weighted regression work?
+\begin{center}
+\animategraphics[controls,width=\linewidth]{12}{fig/wtex}{}{} %frame rate is 12 per/sec
+\end{center}
+\end{frame}
+
+% prednrm figures
+<<echo = F, message = F, cache = T, eval = F>>=
+#plot of predicted and salinity normalized data, aggregated by year...
+ylabs<-expression(paste('Chloropyhll-',italic(a),' (',italic('\u03bc'),'g ',L^-1,')'))
+
+quants1<-expression(paste(italic('\u03c4'),' ',0.9))
+quants2<-expression(paste(italic('\u03c4'),' ',0.1))
+
+est<-epc.est
+est<-aggregate(cbind(bt.md,bt.hi,bt.lo,Chla_ugl)~seg+year,est,mean)
+
+est2<-sal.nrm
+est2<-aggregate(cbind(norm.md,norm.hi,norm.lo,Chla_ugl)~seg+year,est2,mean)
+
+seg.levs<-c('Hillsborough Bay','Old Tampa Bay','Middle Tampa Bay','Lower Tampa Bay')
+seg.names<-c('HB','OTB','MTB','LTB')
+est2$seg <- factor(est2$seg, labels = seg.levs, levels = seg.names)
+
+##
+pbase <- ggplot(est2,aes(x=as.numeric(year),group=seg)) + 
+  geom_point(data=est,aes(y=bt.md,shape='Pred'),alpha=0.7) +
+  geom_line(aes(y=norm.md,linetype='Norm',colour='Norm'),alpha=0.7) +
+  geom_point(data=est,aes(y=bt.hi,shape='Pred hi'),alpha=0.7) +
+  geom_line(aes(y=norm.hi,linetype='Norm hi',colour='Norm hi'),alpha=0.7) +
+  geom_point(data=est,aes(y=bt.lo,shape='Pred lo'),alpha=0.7) +
+  geom_line(aes(y=norm.lo,linetype='Norm lo',colour='Norm lo'),alpha=0.7) +
+  scale_y_continuous(ylabs) +
+  facet_wrap(~seg,scales='free_y') +
+  scale_x_continuous(
+    breaks=seq(1975,2012,by=5),
+    name=element_blank()
+    )
+
+# med obs only only
+p1 <- pbase +
+  scale_shape_manual(
+    name='Predicted',
+    labels=c(
+      'Pred'='Mean',
+      'Pred hi'=quants1,
+      'Pred lo'=quants2
+      ),
+    values=c(16,NA,NA)
+    ) + 
+  scale_linetype_manual(
+    name='Normalized',
+    labels=c(
+      'Norm'='Mean',
+      'Norm hi'=quants1,
+      'Norm lo'=quants2
+      ),
+    values=c(1,1,1)
+    ) +
+  scale_colour_manual(
+    name='Normalized',
+    labels=c(
+      'Norm'='Mean',
+      'Norm hi'=quants1,
+      'Norm lo'=quants2
+      ),
+    values=c(
+      'Norm'=NA,
+      'Norm hi'=NA,
+      'Norm lo'=NA
+      )
+    )
+
+# quant obs only
+p2 <- pbase +
+  scale_shape_manual(
+    name='Predicted',
+    labels=c(
+      'Pred'='Mean',
+      'Pred hi'=quants1,
+      'Pred lo'=quants2
+      ),
+    values=c(16,1,1)
+    ) + 
+  scale_linetype_manual(
+    name='Normalized',
+    labels=c(
+      'Norm'='Mean',
+      'Norm hi'=quants1,
+      'Norm lo'=quants2
+      ),
+    values=c(1,1,1)
+    ) +
+  scale_colour_manual(
+    name='Normalized',
+    labels=c(
+      'Norm'='Mean',
+      'Norm hi'=quants1,
+      'Norm lo'=quants2
+      ),
+    values=c(
+      'Norm'=NA,
+      'Norm hi'=NA,
+      'Norm lo'=NA
+      )
+    )
+
+# med obs with norms 
+p3 <- pbase +
+  scale_shape_manual(
+    name='Predicted',
+    labels=c(
+      'Pred'='Mean',
+      'Pred hi'=quants1,
+      'Pred lo'=quants2
+      ),
+    values=c(16, 1, 1)
+    ) + 
+  scale_linetype_manual(
+    name='Normalized',
+    labels=c(
+      'Norm'='Mean',
+      'Norm hi'=quants1,
+      'Norm lo'=quants2
+      ),
+    values=c(1,1,1)
+    ) +
+  scale_colour_manual(
+    name='Normalized',
+    labels=c(
+      'Norm'='Mean',
+      'Norm hi'=quants1,
+      'Norm lo'=quants2
+      ),
+    values=c(
+      'Norm'=pal(num.cols)[5],
+      'Norm hi'=NA,
+      'Norm lo'=NA
+      )
+    )
+
+# obs, norms, meds, quants
+p4 <- pbase +
+  scale_shape_manual(
+    name='Predicted',
+    labels=c(
+      'Pred'='Mean',
+      'Pred hi'=quants1,
+      'Pred lo'=quants2
+      ),
+    values=c(16,1,1)
+    ) + 
+  scale_linetype_manual(
+    name='Normalized',
+    labels=c(
+      'Norm'='Mean',
+      'Norm hi'=quants1,
+      'Norm lo'=quants2
+      ),
+    values=c(1,1,1)
+    ) +
+  scale_colour_manual(
+    name='Normalized',
+    labels=c(
+      'Norm'='Mean',
+      'Norm hi'=quants1,
+      'Norm lo'=quants2
+      ),
+    values=c(
+      'Norm'=pal(num.cols)[5],
+      'Norm hi'=pal(num.cols)[1],
+      'Norm lo'=pal(num.cols)[1]
+      )
+    )
+
+# save all
+pdf('fig/prednrm.pdf', height = 4, width = 8, family = 'serif')
+print(p1)
+print(p2)
+print(p3)
+print(p4)
+dev.off()
+@
+
+%%%%%%
+\begin{frame}{\textbf{Weighted regression approach}}{\textbf{ Results for Tampa Bay}}
+\only<1>{This gives us improved trend descriptions... Observed predictions}
+\only<3>{This gives us improved trend descriptions... Quantile predictions}
+\only<2>{This gives us improved trend descriptions... Observed, flow-norm}
+\only<4>{This gives us improved trend descriptions... Quantile, flow-norm}
+\includegraphics<1>[width=\textwidth,page=1]{fig/prednrm.pdf}
+\includegraphics<2>[width=\textwidth,page=2]{fig/prednrm.pdf}
+\includegraphics<3>[width=\textwidth,page=3]{fig/prednrm.pdf}
+\includegraphics<4>[width=\textwidth,page=4]{fig/prednrm.pdf}
+\end{frame}
+
+<<hill, eval = F, echo = F, cache = T>>=
+load('data/salwt_grd.RData')
+load('data/epc_est.RData')
+
+to.plo <- sal.grd
+labs <- c('January', 'February', 'March', 'April', 'May', 'June', 'July', 
+  'August', 'September', 'October', 'November', 'December')
+to.plo$month.name <- factor(to.plo$month.num, labels = labs)
+
+#min, max sal.ref vals to plot....
+lim.vals<- ddply(
+  epc.est, 
+  .variable = c('seg', 'month.num'), 
+  .fun = function(x){
+    Low <- quantile(x$sal.ref, 0.05)
+    High <- quantile(x$sal.ref, 0.95)
+    data.frame(Low, High)
+    }
+  )
+lim.vals$month.name <- factor(lim.vals$month.num, labels = labs)
+
+# months to sub
+month.sub <- 'July'
+to.plo <- to.plo[to.plo$month.name == month.sub, ]
+lim.vals <- lim.vals[lim.vals$month.name == month.sub, ]
+
+# constrain plots to quants
+to.plo <- merge(to.plo, lim.vals, by = c('seg'), all.x = T)
+sel.vec <- with(to.plo, 
+  sal.grid >= Low &
+  sal.grid <= High
+  )
+to.plo <- to.plo[sel.vec, ]
+
+to.plo <- to.plo[to.plo$seg == 'Hillsborough Bay', ]
+
+#y axis label for plots
+ylabs<-expression(paste('Chloropyhll-',italic(a),' (',italic('\u03bc'),'g ',L^-1,')'))
+
+p1 <- ggplot(to.plo, aes(x = sal.grid, y = bt.md, group = dec.time, 
+    colour = dec.time)) + 
+  geom_line(size = 1) + 
+  facet_wrap(~seg, scales = 'free', ncol = 4) + 
+  scale_y_continuous(ylabs) +
+  scale_x_continuous(name=expression(italic(Sal[ff]))) +
+  theme_mine() +
+  theme(legend.position = 'bottom') +
+  scale_colour_gradientn('Year', colours = pal(5))
+
+pdf('fig/hill.pdf', width = 4, height =3.5, family = 'serif')
+print(p1)
+dev.off()
+@
+
+%%%%%%
+\begin{frame}{\textbf{Tampa Bay}}{\textbf{Understanding chlorophyll response to eutrophication}}
+Because the model is dynamic, we have parameters describing the relationship of chlorophyll with other factors specific to different time periods \\~\\
+\begin{columns}[T]
+\begin{column}{0.45\textwidth}
+\centerline{\includegraphics[width = \textwidth]{fig/hill.pdf}}
+\end{column}
+\begin{column}{0.45\textwidth}
+\begin{itemize}
+\item Early period (blue) - point-sources
+\item Late period (red) - non-point sources
+\item Chlorophyll shows increasing response to freshwater input in recent years
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+%%%%%%
+\begin{frame}{\textbf{Tampa Bay}}{\textbf{Understanding chlorophyll response to eutrophication}}
+What does this mean for Tampa Bay and elsewhere?\\~\\
+\begin{itemize}
+\item Predictions followed observed chlorophyll -- but increased clarity in the description
+\item More detailed evaluation of trends allows greater insight into drivers of change\\~\\
+\end{itemize}
+The model parameters show us a picture...
+\centerline{\includegraphics[width = \textwidth]{fig/title_plo.pdf}}
+\end{frame}
+
+% patux map
+<<echo = F, cache = T, message = F, eval = F>>=
+
+# load data
+data(cb_poly)
+data(usa_poly)
+data(patux_poly)
+data(pax_meta)
+
+# lims <- bbox(patux_poly)
+
+# color palette
+mapcols <- wes.palette(name = 'Zissou', type = 'continuous')
+mapcols <- mapcols(100)[1:60]
+mapcols <- mapcols[round(seq(1, length(mapcols), length = 3))]
+
+# prep for plots
+cb_poly <- fortify(cb_poly)
+usa_poly <- fortify(usa_poly)
+patux_poly <- fortify(patux_poly) %>% 
+  mutate(id = factor(id, levels = c('60', '74', '88'), labels = c('TF', 'OH', 'MH')))
+
+pax_meta$lab <- with(pax_meta, paste0('"', STATION, ' (', round(dist_km, 1), ')"'))
+pax_meta$lab[c(4, 8)] <- paste0('bold(', pax_meta$lab[c(4, 8)], ')') 
+
+# base map
+p1 <- ggplot(patux_poly, aes(x = long, y = lat)) + 
+  geom_polygon(data = cb_poly, aes(x = long, y = lat, group = group), 
+    fill = 'grey90', colour = 'grey50') +
+  geom_polygon(aes(fill = factor(id), group = group), colour = NA) +
+  scale_fill_manual(values = rev(mapcols)) +
+  geom_point(data = pax_meta, aes(x = LONG, y = LAT), size = 5, alpha = 0.8) +
+  geom_text(data = pax_meta, aes(x = LONG * 1.001, y = LAT, label = lab), size = 5, 
+    parse = TRUE) +
+  theme_classic() + 
+  theme(axis.line=element_blank(), axis.text.x=element_blank(),
+    axis.text.y=element_blank(), axis.ticks=element_blank(),
+    axis.title.x=element_blank(),
+    axis.title.y=element_blank(),
+    panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+    panel.grid.minor=element_blank(),plot.background=element_blank(), 
+    legend.position = 'top', 
+    legend.title = element_blank(), 
+    legend.background = element_rect(fill =  scales::alpha(bg_col, 0))
+    ) +
+  coord_fixed(ratio = 1, xlim = c(-76.84, -76.38), ylim = c(38.27, 38.88))
+
+
+# inset
+p2 <- ggplot(patux_poly, aes(x = long, y = lat)) + 
+  geom_polygon(data = usa_poly, aes(x = long, y = lat, group = group), 
+    fill = 'white', colour = 'grey50') +
+  geom_polygon(aes(group = group), colour = 'black', fill = 'black') +
+  theme(axis.title =element_blank(), 
+          axis.text.y = element_text(colour = 'black'), 
+          axis.text.x = element_text(colour = 'black', angle = 90, vjust = 0.5), 
+          panel.background=element_rect(fill = 'grey90'),
+          panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          plot.background=element_blank(),
+          panel.border = element_rect(colour = "black", fill = NA, size = 1)
+    ) +
+  coord_fixed(ratio = 1, xlim = c(-77.5, -75.5), ylim = c(36.7, 39.7))
+
+grid.newpage()
+v1 <- viewport(width = 1, height = 1, x = 0.5, y = 0.5) 
+v2 <- viewport(width = 0.55, height = 0.55, x = 0.7275, y = 0.64)
+
+pdf('fig/patux_map.pdf', height = 7, width = 5, family = 'serif')
+print(p1, vp = v1) 
+print(p2, vp = v2)
+dev.off()
+@
+
+% patux trends
+<<echo = F, cache = T, message = F, eval = F>>=
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+data(bestLE12)
+data(bestTF16)
+
+cols <- wes.palette(name = 'Zissou', type = 'continuous')
+cols <- cols(100)[1:60]
+
+# some plots
+bestTF16$site <- 'TF1.6'
+bestLE12$site <- 'LE1.2'
+names(bestLE12) <- gsub('gams$', 'GAM', names(bestLE12))
+names(bestLE12) <- gsub('wrtds$', 'WRTDS', names(bestLE12))
+names(bestTF16) <- gsub('gams$', 'GAM', names(bestTF16))
+names(bestTF16) <- gsub('wrtds$', 'WRTDS', names(bestTF16))
+
+bestLE12 <- select(bestLE12, -sal, -lnQ, -dec_time, -se_GAM)
+bestTF16 <- select(bestTF16, -lnQ, -sal, -dec_time, -se_GAM)
+toplo <- rbind(bestTF16, bestLE12) %>% 
+  gather(variable, value, fits_WRTDS:res_GAM) %>% 
+  separate(variable, c('output', 'model'), sep = '_') %>% 
+  mutate(output = factor(output, levels = c('fits', 'norm', 'res'), labels = c('Pred', 'Norm', 'Res')))
+
+toplo2 <- mutate(toplo, year = as.numeric(strftime(date, '%Y'))) %>% 
+  group_by(year, site, output, model) %>% 
+  summarise(value = mean(value, na.rm = TRUE)) %>% 
+  filter(output != 'Res') %>% 
+  spread(output, value) 
+
+p2 <- ggplot(toplo2, aes(x = year, y = Pred, colour = 'Pred')) + 
+  geom_line(aes(x = year, y = Norm, colour = 'Norm'), size = 1) + 
+  geom_point() + 
+  facet_wrap(site ~ model) + 
+  theme(
+    axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5),
+    axis.title.x = element_blank(), 
+    legend.title = element_blank(), 
+    legend.position = 'top'
+    ) +
+  scale_y_continuous(limits = c(1.5, 3), breaks = seq(1.5, 3, 0.5)) + 
+  scale_colour_manual(values = cols[c(length(cols), 1)]) + 
+  ylab(expression(paste('ln-Chl ',' (',italic('\u03bc'),'g ',L^-1,')'))) +
+  guides(color=guide_legend(override.aes=list(shape=c(NA,16),linetype=c(1,0))))
+
+pdf('fig/predann.pdf', height = 6, width = 7, family = 'serif')
+print(p2)
+dev.off()
+@
+
+%%%%%%
+\begin{frame}{\textbf{WRTDS adaptations and products}}{\textbf{ Additional study systems}}
+Currently comparing WRTDS and GAMs for trend evaluation
+\begin{columns}
+\begin{column}{0.38\textwidth}
+\includegraphics[width = \textwidth]{fig/patux_map.pdf}
+\end{column}
+\begin{column}{0.65\textwidth}
+\includegraphics[width = \textwidth]{fig/predann.pdf}
+\end{column}
+\end{columns}
+\end{frame}
+
+%%%%%%
+\begin{frame}{\textbf{WRTDS adaptations and products}}{\textbf{ Additional study systems}}
+Use of weighted regression to `detide' dissolved oxygen time series \\~\\
+\includegraphics[width = \textwidth]{fig/lopaper.png} \\~\\
+\alert{Wednesday 11:15, B110-112}
+\end{frame}
+
+%%%%%%
+\begin{frame}
+Acknowledgments:\\~\\
+\begin{columns}
+\begin{column}{0.6\textwidth}
+{\footnotesize
+Research staff and employees at USEPA Gulf Ecology Division \\~\\
+Field staff and data managers at Hillsborough County Environmental Protection Commission\\~\\
+Research coordinators, technicians, and field staff of the National Estuarine Research Reserve System}\\~\\
+\end{column}
+\begin{column}{0.3\textwidth}
+\vspace{-0.2in}
+\begin{center}
+{\tiny
+Wes Anderson Zissou color theme borrowed and adapted from \href{https://github.com/karthik/wesanderson}{github.com/karthik}\\~\\
+\includegraphics[width=0.55\linewidth]{fig/zissou.png}\\~\\
+\vspace{-0.15in}
+\scalebox{0.7}{\hbox{\tiny Image credit:\thinspace{\tiny \href{http://stephenmorrow.deviantart.com/}{Stephen Morrow}}}}}
+\end{center}
+\end{column}
+\end{columns}
+\vfill
+Funding sources and contact:\\~\\
+\begin{columns}
+\begin{column}{0.4\textwidth}
+\centerline{\includegraphics[width=0.5\linewidth]{fig/epa_logo.png}}
+\end{column}
+\begin{column}{0.6\textwidth}
+\scriptsize
+\href{mailto:beck.marcus@epa.gov}{beck.marcus@epa.gov} \\~\\
+Phone: 8509342480 \\~\\
+Blog: \href{http://beckmw.wordpress.com/}{http://beckmw.wordpress.com/} \\~\\
+\alert{WRTDS tidal package}: \href{https://github.com/fawda123/wtreg_for_estuaries}{https://github.com/fawda123/wtreg\_for\_estuaries}
+\end{column}
+\end{columns}
+\vspace{0.2in}
+\end{frame}
+
+%%%%%%
+\begin{frame}[allowframebreaks,t]{\textbf{References}}
+\tiny
+\setbeamertemplate{bibliography item}{}
+\bibliographystyle{apalike_mine}
+\bibliography{ref_diss}
+\end{frame}
+
+\end{document}
