@@ -887,10 +887,10 @@ dev.off()
 
 %%%%%%
 \begin{frame}{\textbf{Weighted regression approach}}{\textbf{ Results for Tampa Bay}}
-\only<1>{This gives us improved trend descriptions... Observed predictions}
-\only<3>{This gives us improved trend descriptions... Quantile predictions}
-\only<2>{This gives us improved trend descriptions... Observed, flow-norm}
-\only<4>{This gives us improved trend descriptions... Quantile, flow-norm}
+\only<1>{This gives us improved trend descriptions... \alert{observed predictions}}
+\only<2>{This gives us improved trend descriptions... \alert{quantile predictions}}
+\only<3>{This gives us improved trend descriptions... \alert{observed, flow-norm}}
+\only<4>{This gives us improved trend descriptions... \alert{quantile, flow-norm}}
 \includegraphics<1>[width=\textwidth,page=1]{fig/prednrm.pdf}
 \includegraphics<2>[width=\textwidth,page=2]{fig/prednrm.pdf}
 \includegraphics<3>[width=\textwidth,page=3]{fig/prednrm.pdf}
@@ -1121,14 +1121,14 @@ Currently comparing WRTDS and GAMs for trend evaluation
 
 %%%%%%
 \begin{frame}{\textbf{WRTDS adaptations and products}}{\textbf{ Additional study systems}}
-Use of weighted regression to `detide' dissolved oxygen time series \\~\\
+Adapting weighted regression to `detide' dissolved oxygen time series \\~\\
 \includegraphics[width = \textwidth]{fig/lopaper.png} \\~\\
-\alert{Wednesday 11:15, B110-112}
+\centerline{\alert{Wednesday 11:15, B110-112}}
 \end{frame}
 
 %%%%%%
 \begin{frame}
-Acknowledgments:\\~\\
+\alert{Acknowledgments:}\\~\\
 \begin{columns}
 \begin{column}{0.6\textwidth}
 {\footnotesize
@@ -1148,7 +1148,7 @@ Wes Anderson Zissou color theme borrowed and adapted from \href{https://github.c
 \end{column}
 \end{columns}
 \vfill
-Funding sources and contact:\\~\\
+\alert{Funding sources and contact:}\\~\\
 \begin{columns}
 \begin{column}{0.4\textwidth}
 \centerline{\includegraphics[width=0.5\linewidth]{fig/epa_logo.png}}
@@ -1158,15 +1158,15 @@ Funding sources and contact:\\~\\
 \href{mailto:beck.marcus@epa.gov}{beck.marcus@epa.gov} \\~\\
 Phone: 8509342480 \\~\\
 Blog: \href{http://beckmw.wordpress.com/}{http://beckmw.wordpress.com/} \\~\\
-\alert{WRTDS tidal package}: \href{https://github.com/fawda123/wtreg_for_estuaries}{https://github.com/fawda123/wtreg\_for\_estuaries}
+\alert{WRTDS tidal package:} \href{https://github.com/fawda123/wtreg_for_estuaries}{https://github.com/fawda123/wtreg\_for\_estuaries}
 \end{column}
 \end{columns}
 \vspace{0.2in}
 \end{frame}
 
 %%%%%%
-\begin{frame}[allowframebreaks,t]{\textbf{References}}
-\tiny
+\begin{frame}[t]{\textbf{References}}
+\scriptsize
 \setbeamertemplate{bibliography item}{}
 \bibliographystyle{apalike_mine}
 \bibliography{ref_diss}
