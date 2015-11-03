@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.8.29)  3 NOV 2015 09:19
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.8.29)  3 NOV 2015 13:12
 entering extended mode
 **wrtds_tidal.tex
 (M:\presentations\cerf15_pres\wrtds_tidal.tex
@@ -1493,89 +1493,101 @@ LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4> not available
 
 {C:/Users/mbeck/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map} <M:/presenta
 tions/cerf15_pres/fig/back_tmp.pdf> <M:/presentations/cerf15_pres/fig/title_plo
-noleg.pdf>]
+noleg.pdf>] <fig/emapaper.png, id=60, 771.63281pt x 372.64218pt>
+File: fig/emapaper.png Graphic file (type png)
+
+<use fig/emapaper.png>
+Package pdftex.def Info: fig/emapaper.png used on input line 115.
+(pdftex.def)             Requested size: 342.2953pt x 165.29929pt.
 File: fig/back_tmp.pdf Graphic file (type pdf)
  <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 128.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 115.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
  [2
 
+ <M:/presentations/cerf15_pres/fig/emapaper.png>]
+File: fig/back_tmp.pdf Graphic file (type pdf)
+ <use fig/back_tmp.pdf>
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 135.
+(pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
+ [3
+
 ]
-<fig/ts_ex.pdf, id=74, 867.24pt x 144.54pt>
+<fig/ts_ex.pdf, id=82, 867.24pt x 144.54pt>
 File: fig/ts_ex.pdf Graphic file (type pdf)
  <use fig/ts_ex.pdf>
-Package pdftex.def Info: fig/ts_ex.pdf used on input line 142.
+Package pdftex.def Info: fig/ts_ex.pdf used on input line 149.
 (pdftex.def)             Requested size: 342.2953pt x 57.04965pt.
 
-Overfull \vbox (3.8374pt too high) detected at line 142
+Overfull \vbox (3.8374pt too high) detected at line 149
  []
 
 File: fig/back_tmp.pdf Graphic file (type pdf)
 <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 142.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 149.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
- [3
+ [4
 
  <M:/presentations/cerf15_pres/fig/ts_ex.pdf>]
-<fig/tb_map.pdf, id=90, 469.755pt x 469.755pt>
+<fig/tb_map.pdf, id=98, 469.755pt x 469.755pt>
 File: fig/tb_map.pdf Graphic file (type pdf)
  <use fig/tb_map.pdf>
-Package pdftex.def Info: fig/tb_map.pdf used on input line 162.
+Package pdftex.def Info: fig/tb_map.pdf used on input line 169.
 (pdftex.def)             Requested size: 171.14764pt x 171.14734pt.
 File: fig/back_tmp.pdf Graphic file (type pdf)
 
 <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 162.
-(pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
- [4
-
- <M:/presentations/cerf15_pres/fig/tb_map.pdf>]
-<fig/annual_chl.pdf, id=108, 578.16pt x 325.215pt>
-File: fig/annual_chl.pdf Graphic file (type pdf)
- <use fig/annual_chl.pdf>
-Package pdftex.def Info: fig/annual_chl.pdf used on input line 177.
-(pdftex.def)             Requested size: 342.2953pt x 192.54015pt.
-
-Overfull \vbox (13.59866pt too high) detected at line 177
- []
-
-File: fig/back_tmp.pdf Graphic file (type pdf)
-<use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 177.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 169.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
  [5
 
- <M:/presentations/cerf15_pres/fig/annual_chl.pdf>]
-<fig/salmoyr.pdf, id=127, page=1, 274.02374pt x 230.8625pt>
-File: fig/salmoyr.pdf Graphic file (type pdf)
+ <M:/presentations/cerf15_pres/fig/tb_map.pdf>]
+<fig/annual_chl.pdf, id=116, 578.16pt x 325.215pt>
+File: fig/annual_chl.pdf Graphic file (type pdf)
+ <use fig/annual_chl.pdf>
+Package pdftex.def Info: fig/annual_chl.pdf used on input line 184.
+(pdftex.def)             Requested size: 342.2953pt x 192.54015pt.
 
-<use fig/salmoyr.pdf, page 1>
-Package pdftex.def Info: fig/salmoyr.pdf, page1 used on input line 206.
-(pdftex.def)             Requested size: 157.45813pt x 124.70282pt.
-
-<fig/salmoyr.pdf, id=129, page=2, 274.02374pt x 230.8625pt>
-File: fig/salmoyr.pdf Graphic file (type pdf)
-
-<use fig/salmoyr.pdf, page 2>
-Package pdftex.def Info: fig/salmoyr.pdf, page2 used on input line 206.
-(pdftex.def)             Requested size: 157.45813pt x 124.70282pt.
-
-Overfull \vbox (0.26308pt too high) detected at line 206
+Overfull \vbox (13.59866pt too high) detected at line 184
  []
 
 File: fig/back_tmp.pdf Graphic file (type pdf)
 <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 206.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 184.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
  [6
+
+ <M:/presentations/cerf15_pres/fig/annual_chl.pdf>]
+<fig/salmoyr.pdf, id=135, page=1, 274.02374pt x 230.8625pt>
+File: fig/salmoyr.pdf Graphic file (type pdf)
+
+<use fig/salmoyr.pdf, page 1>
+Package pdftex.def Info: fig/salmoyr.pdf, page1 used on input line 213.
+(pdftex.def)             Requested size: 157.45813pt x 124.70282pt.
+
+<fig/salmoyr.pdf, id=137, page=2, 274.02374pt x 230.8625pt>
+File: fig/salmoyr.pdf Graphic file (type pdf)
+
+<use fig/salmoyr.pdf, page 2>
+Package pdftex.def Info: fig/salmoyr.pdf, page2 used on input line 213.
+(pdftex.def)             Requested size: 157.45813pt x 124.70282pt.
+
+Overfull \vbox (0.26308pt too high) detected at line 213
+ []
+
+File: fig/back_tmp.pdf Graphic file (type pdf)
+<use fig/back_tmp.pdf>
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 213.
+(pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
+ [7
 
  <M:/presentations/cerf15_pres/fig/salmoyr.pdf> <M:/presentations/cerf15_pres/f
 ig/salmoyr.pdf>]
 File: fig/back_tmp.pdf Graphic file (type pdf)
  <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 215.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 222.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
- [7
+ [8
 
 ] <M:/presentations/cerf15_pres/fig/wtex.pdf> <1> <M:/presentations/cerf15_pres
 /fig/wtex.pdf> <2> <M:/presentations/cerf15_pres/fig/wtex.pdf> <3> <M:/presenta
@@ -1663,152 +1675,152 @@ ig/wtex.pdf> <130> <M:/presentations/cerf15_pres/fig/wtex.pdf> <131> <M:/presen
 tations/cerf15_pres/fig/wtex.pdf> <132>
 File: fig/back_tmp.pdf Graphic file (type pdf)
  <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 225.
-(pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
- [8
-
-]
-<fig/prednrm.pdf, id=875, page=1, 578.16pt x 289.08pt>
-File: fig/prednrm.pdf Graphic file (type pdf)
-
-<use fig/prednrm.pdf, page 1>
-Package pdftex.def Info: fig/prednrm.pdf, page1 used on input line 240.
-(pdftex.def)             Requested size: 342.2953pt x 171.14679pt.
-File: fig/back_tmp.pdf Graphic file (type pdf)
- <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 240.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 232.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
  [9
 
- <M:/presentations/cerf15_pres/fig/prednrm.pdf>]
-<fig/prednrm.pdf, id=895, page=2, 578.16pt x 289.08pt>
+]
+<fig/prednrm.pdf, id=885, page=1, 578.16pt x 289.08pt>
 File: fig/prednrm.pdf Graphic file (type pdf)
 
-<use fig/prednrm.pdf, page 2>
-Package pdftex.def Info: fig/prednrm.pdf, page2 used on input line 240.
+<use fig/prednrm.pdf, page 1>
+Package pdftex.def Info: fig/prednrm.pdf, page1 used on input line 247.
 (pdftex.def)             Requested size: 342.2953pt x 171.14679pt.
 File: fig/back_tmp.pdf Graphic file (type pdf)
  <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 240.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 247.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
  [10
 
  <M:/presentations/cerf15_pres/fig/prednrm.pdf>]
-<fig/prednrm.pdf, id=915, page=3, 578.16pt x 289.08pt>
+<fig/prednrm.pdf, id=905, page=2, 578.16pt x 289.08pt>
 File: fig/prednrm.pdf Graphic file (type pdf)
 
-<use fig/prednrm.pdf, page 3>
-Package pdftex.def Info: fig/prednrm.pdf, page3 used on input line 240.
+<use fig/prednrm.pdf, page 2>
+Package pdftex.def Info: fig/prednrm.pdf, page2 used on input line 247.
 (pdftex.def)             Requested size: 342.2953pt x 171.14679pt.
 File: fig/back_tmp.pdf Graphic file (type pdf)
  <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 240.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 247.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
  [11
 
  <M:/presentations/cerf15_pres/fig/prednrm.pdf>]
-<fig/prednrm.pdf, id=935, page=4, 578.16pt x 289.08pt>
+<fig/prednrm.pdf, id=925, page=3, 578.16pt x 289.08pt>
 File: fig/prednrm.pdf Graphic file (type pdf)
 
-<use fig/prednrm.pdf, page 4>
-Package pdftex.def Info: fig/prednrm.pdf, page4 used on input line 240.
+<use fig/prednrm.pdf, page 3>
+Package pdftex.def Info: fig/prednrm.pdf, page3 used on input line 247.
 (pdftex.def)             Requested size: 342.2953pt x 171.14679pt.
 File: fig/back_tmp.pdf Graphic file (type pdf)
  <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 240.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 247.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
  [12
 
- <M:/presentations/cerf15_pres/fig/prednrm.pdf>] <fig/hill.pdf, id=955, 289.08p
+ <M:/presentations/cerf15_pres/fig/prednrm.pdf>]
+<fig/prednrm.pdf, id=945, page=4, 578.16pt x 289.08pt>
+File: fig/prednrm.pdf Graphic file (type pdf)
+
+<use fig/prednrm.pdf, page 4>
+Package pdftex.def Info: fig/prednrm.pdf, page4 used on input line 247.
+(pdftex.def)             Requested size: 342.2953pt x 171.14679pt.
+File: fig/back_tmp.pdf Graphic file (type pdf)
+ <use fig/back_tmp.pdf>
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 247.
+(pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
+ [13
+
+ <M:/presentations/cerf15_pres/fig/prednrm.pdf>] <fig/hill.pdf, id=966, 289.08p
 t x 252.945pt>
 File: fig/hill.pdf Graphic file (type pdf)
 
 <use fig/hill.pdf>
-Package pdftex.def Info: fig/hill.pdf used on input line 259.
+Package pdftex.def Info: fig/hill.pdf used on input line 266.
 (pdftex.def)             Requested size: 154.03183pt x 134.77809pt.
 File: fig/back_tmp.pdf Graphic file (type pdf)
  <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 259.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 266.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
- [13
+ [14
 
- <M:/presentations/cerf15_pres/fig/hill.pdf>] <fig/title_plo.pdf, id=975, 867.2
+ <M:/presentations/cerf15_pres/fig/hill.pdf>] <fig/title_plo.pdf, id=985, 867.2
 4pt x 252.945pt>
 File: fig/title_plo.pdf Graphic file (type pdf)
 
 <use fig/title_plo.pdf>
-Package pdftex.def Info: fig/title_plo.pdf used on input line 270.
+Package pdftex.def Info: fig/title_plo.pdf used on input line 277.
 (pdftex.def)             Requested size: 342.2953pt x 99.83691pt.
 File: fig/back_tmp.pdf Graphic file (type pdf)
  <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 270.
-(pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
- [14
-
- <M:/presentations/cerf15_pres/fig/title_plo.pdf>] <fig/patux_map.pdf, id=994, 
-361.35pt x 505.89pt>
-File: fig/patux_map.pdf Graphic file (type pdf)
-
-<use fig/patux_map.pdf>
-Package pdftex.def Info: fig/patux_map.pdf used on input line 289.
-(pdftex.def)             Requested size: 130.07388pt x 182.10481pt.
- <fig/predann.pdf, id=995, 505.89pt x 433.62pt>
-File: fig/predann.pdf Graphic file (type pdf)
-
-<use fig/predann.pdf>
-Package pdftex.def Info: fig/predann.pdf used on input line 289.
-(pdftex.def)             Requested size: 222.48985pt x 190.70737pt.
-File: fig/back_tmp.pdf Graphic file (type pdf)
- <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 289.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 277.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
  [15
 
- <M:/presentations/cerf15_pres/fig/patux_map.pdf> <M:/presentations/cerf15_pres
-/fig/predann.pdf>]
-<fig/lopaper.png, id=1022, 771.63281pt x 255.20343pt>
-File: fig/lopaper.png Graphic file (type png)
- <use fig/lopaper.png>
-Package pdftex.def Info: fig/lopaper.png used on input line 296.
-(pdftex.def)             Requested size: 342.2953pt x 113.20496pt.
-File: fig/back_tmp.pdf Graphic file (type pdf)
+ <M:/presentations/cerf15_pres/fig/title_plo.pdf>] <fig/patux_map.pdf, id=1004,
+ 361.35pt x 505.89pt>
+File: fig/patux_map.pdf Graphic file (type pdf)
 
-<use fig/back_tmp.pdf>
+<use fig/patux_map.pdf>
+Package pdftex.def Info: fig/patux_map.pdf used on input line 296.
+(pdftex.def)             Requested size: 130.07388pt x 182.10481pt.
+ <fig/predann.pdf, id=1005, 505.89pt x 433.62pt>
+File: fig/predann.pdf Graphic file (type pdf)
+
+<use fig/predann.pdf>
+Package pdftex.def Info: fig/predann.pdf used on input line 296.
+(pdftex.def)             Requested size: 222.48985pt x 190.70737pt.
+File: fig/back_tmp.pdf Graphic file (type pdf)
+ <use fig/back_tmp.pdf>
 Package pdftex.def Info: fig/back_tmp.pdf used on input line 296.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
  [16
 
+ <M:/presentations/cerf15_pres/fig/patux_map.pdf> <M:/presentations/cerf15_pres
+/fig/predann.pdf>]
+<fig/lopaper.png, id=1033, 771.63281pt x 255.20343pt>
+File: fig/lopaper.png Graphic file (type png)
+ <use fig/lopaper.png>
+Package pdftex.def Info: fig/lopaper.png used on input line 303.
+(pdftex.def)             Requested size: 342.2953pt x 113.20496pt.
+File: fig/back_tmp.pdf Graphic file (type pdf)
+
+<use fig/back_tmp.pdf>
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 303.
+(pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
+ [17
+
  <M:/presentations/cerf15_pres/fig/lopaper.png>]
-<fig/zissou.png, id=1030, 293.095pt x 501.875pt>
+<fig/zissou.png, id=1042, 293.095pt x 501.875pt>
 File: fig/zissou.png Graphic file (type png)
  <use fig/zissou.png>
-Package pdftex.def Info: fig/zissou.png used on input line 334.
+Package pdftex.def Info: fig/zissou.png used on input line 341.
 (pdftex.def)             Requested size: 56.4796pt x 96.70503pt.
 
-<fig/epa_logo.png, id=1033, 195.6108pt x 196.0926pt>
+<fig/epa_logo.png, id=1045, 195.6108pt x 196.0926pt>
 File: fig/epa_logo.png Graphic file (type png)
  <use fig/epa_logo.png>
-Package pdftex.def Info: fig/epa_logo.png used on input line 334.
+Package pdftex.def Info: fig/epa_logo.png used on input line 341.
 (pdftex.def)             Requested size: 68.45801pt x 68.62445pt.
 
-Overfull \vbox (9.99052pt too high) detected at line 334
+Overfull \vbox (9.99052pt too high) detected at line 341
  []
 
 File: fig/back_tmp.pdf Graphic file (type pdf)
 <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 334.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 341.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
- [17
+ [18
 
  <M:/presentations/cerf15_pres/fig/zissou.png> <M:/presentations/cerf15_pres/fi
 g/epa_logo.png>]
 (M:\presentations\cerf15_pres\wrtds_tidal.bbl)
 File: fig/back_tmp.pdf Graphic file (type pdf)
  <use fig/back_tmp.pdf>
-Package pdftex.def Info: fig/back_tmp.pdf used on input line 342.
+Package pdftex.def Info: fig/back_tmp.pdf used on input line 349.
 (pdftex.def)             Requested size: 364.20192pt x 273.15337pt.
-Package atenddvi Info: Last page = 18.
- [18
+Package atenddvi Info: Last page = 19.
+ [19
 
 ]
 \tf@nav=\write6
@@ -1816,14 +1828,14 @@ Package atenddvi Info: Last page = 18.
 \tf@snm=\write8
 
 
-Package caption Warning: Unused \captionsetup[subfloat] on input line 206.
+Package caption Warning: Unused \captionsetup[subfloat] on input line 213.
 See the caption package documentation for explanation.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 344.
-Package atveryend Info: Executing hook `AfterLastShipout' on input line 344.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 351.
+Package atveryend Info: Executing hook `AfterLastShipout' on input line 351.
 (M:\presentations\cerf15_pres\wrtds_tidal.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 344.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 344.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 351.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 351.
 Package rerunfilecheck Info: File `wrtds_tidal.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
 
@@ -1831,13 +1843,13 @@ Package rerunfilecheck Info: File `wrtds_tidal.out' has not changed.
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 344.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 351.
  ) 
 Here is how much of TeX's memory you used:
- 29104 strings out of 493921
- 574589 string characters out of 3147282
- 670008 words of memory out of 3000000
- 31700 multiletter control sequences out of 15000+200000
+ 29116 strings out of 493921
+ 574764 string characters out of 3147282
+ 671050 words of memory out of 3000000
+ 31708 multiletter control sequences out of 15000+200000
  10967 words of font info for 42 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
  49i,16n,73p,473b,789s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1855,9 +1867,9 @@ s/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Program Files/MiKTeX
 lic/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfon
 ts/cm/cmr9.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti
 10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmtt8.pfb>
-Output written on wrtds_tidal.pdf (18 pages, 3311324 bytes).
+Output written on wrtds_tidal.pdf (19 pages, 3348777 bytes).
 PDF statistics:
- 1097 PDF objects out of 1200 (max. 8388607)
- 48 named destinations out of 1000 (max. 500000)
- 2564 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1110 PDF objects out of 1200 (max. 8388607)
+ 51 named destinations out of 1000 (max. 500000)
+ 2569 words of extra memory for PDF output out of 10000 (max. 10000000)
 

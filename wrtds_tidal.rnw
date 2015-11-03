@@ -365,6 +365,13 @@ dev.off()
 \end{frame}
 
 %%%%%%
+\begin{frame}
+\small
+Beck, M.W., Hagy III, J.D. 2015. Adaptation of a weighted regression approach to evaluate water quality trends in an estuary. Environmental Modelling and Assessment. 20(6):637-655. \href{http://dx.doi.org/10.1007/s10666-015-9452-8}{doi: 10.1007/s10666-015-9452-8} \\~\\
+\includegraphics[width = \textwidth]{fig/emapaper.png} 
+\end{frame}
+
+%%%%%%
 \begin{frame}{\textbf{The eutrophication paradigm}}{\textbf{Research and management in coastal waters}}
 \begin{quote}
 Eutrophication (noun) - an \alert{increase} in the rate of supply of \alert{organic matter} to an ecosystem\\~\\
@@ -588,7 +595,7 @@ What affects our interpretation of chlorophyll response to nutrients?
 \alert{Solution:} Develop a model that accounts for changes in relationships between drivers of pollution over time.\\~\\
 The \alert{weighted regression (WRTDS)} model is being developed by USGS for pollutant modelling in rivers \cite{Hirsch10}\\~\\
 Models pollution concentration as a function of \alert{time}, \alert{discharge}, and \alert{season}\\~\\
-\alert{Adaptation:} Can this approach be used to evaluate chlorophyll trends in Tampa Bay?
+\alert{Adaptation:} Can this approach be used to evaluate chlorophyll trends in Tampa Bay \cite{Beck15}?
 \end{frame}
 
 <<wtex, echo = F, results = 'hide', message = F, eval = F>>=
@@ -1121,7 +1128,7 @@ Currently comparing WRTDS and GAMs for trend evaluation
 
 %%%%%%
 \begin{frame}{\textbf{WRTDS adaptations and products}}{\textbf{ Additional study systems}}
-Adapting weighted regression to `detide' dissolved oxygen time series \\~\\
+Adapting weighted regression to `detide' dissolved oxygen time series \cite{Beck15b}\\~\\
 \includegraphics[width = \textwidth]{fig/lopaper.png} \\~\\
 \centerline{\alert{Wednesday 11:15, B110-112}}
 \end{frame}
@@ -1166,7 +1173,7 @@ Blog: \href{http://beckmw.wordpress.com/}{http://beckmw.wordpress.com/} \\~\\
 
 %%%%%%
 \begin{frame}[t]{\textbf{References}}
-\scriptsize
+\tiny
 \setbeamertemplate{bibliography item}{}
 \bibliographystyle{apalike_mine}
 \bibliography{ref_diss}
