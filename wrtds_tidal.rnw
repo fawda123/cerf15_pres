@@ -583,7 +583,7 @@ What affects our interpretation of chlorophyll response to nutrients?
     {\color{black} Chlorophyll-\textit{a}}}}}
     \hspace{0pt plus 1filll}\null
 
-\caption{Variation in chlorophyll by {\color{zissou5}\protect\subref{fig:salmoyr1}} time and {\color{zissou5}\protect\subref{fig:salmoyr2}} salinity and management in Hillsborough Bay.  Panel {\color{zissou5}\protect\subref{fig:salmoyr1}} is colored before and after wastewater treatment in 1979.}
+\caption{Variation in chlorophyll by {\color{zissou5}\protect\subref{fig:salmoyr1}} time and {\color{zissou5}\protect\subref{fig:salmoyr2}} salinity and management in Hillsborough Bay.  Panel {\color{zissou5}\protect\subref{fig:salmoyr2}} is colored before and after wastewater treatment in 1979.}
 \label{fig:salmoyr}
 \end{figure}
 \captionsetup[subfloat]{position=top}
